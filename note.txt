@@ -1,0 +1,47 @@
+ <input type="hidden" name="_id" value="<%=post._id%>">
+
+
+<input type="hidden" name="_id" value="<%=doc._id%>">
+
+
+ <!-- <a href="/compose.<%=post._id%>"><i class="fa fa-pencil" aria-hidden="true"></i></a> -->
+
+ 
+<%- include("partials/header"); -%>
+
+    <h1>Home</h1>
+    <h3> <%= startingContent %> </h3>
+
+
+  <%  posts.forEach(function(post){ %>
+    <form action="/delete" method="post"> 
+    <h1><%=post.title%>
+      <a href="/compose.<%=post._id%>"><i class="fa fa-pencil" aria-hidden="true"></i></a>
+      <input type="hidden" name="_id" value="<%=post._id%>">
+    </form>
+    </h1>
+    <p>
+    <%=post.content.substring(0, 100) + " ..."%>
+    <a href="/posts/<%=post._id%>">Read More</a>
+    <input type="checkbox" name="checkbox" value="<%=post._id%>" onChange="this.form.submit()" onclick="return confirm('Are you sure to delete this record ?')">
+    </p>
+    </form>
+    <% }) %>
+
+
+<%- include("partials/footer"); -%>
+
+
+
+
+app.get("/:postID", function (req, res) {
+  const requestedPostId = req.params.postId;
+  Post.findById(requestedPostId, function (err, post) {
+    if(!err) {
+      res.render("compose", {
+         title: req.body.postTitle,
+         content: req.body.postBody
+      });
+    }
+  });
+});
