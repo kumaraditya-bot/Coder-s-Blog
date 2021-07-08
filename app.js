@@ -13,6 +13,7 @@ app.set('view engine', 'ejs');
 app.use(express.urlencoded({extended: true}));
 app.use(express.static("public"));
 
+
 mongoose.connect("mongodb://localhost:27017/blogDB", {useNewUrlParser: true});
 
 const postSchema = {
@@ -24,7 +25,8 @@ const postSchema = {
   },
 };
 
-const Post = mongoose.model("Post", postSchema);
+const Post = mongoose.model("Post", postSchema); 
+
 app.get("/", function(req, res){
 
   Post.find({}, function(err, posts){
@@ -35,6 +37,7 @@ app.get("/", function(req, res){
   });
 });
 
+//create post.
 app.get("/compose", function(req, res){
   res.render("compose",{
     viewTitle: "Compose",
@@ -42,20 +45,38 @@ app.get("/compose", function(req, res){
     content: req.body.postBody
   });
   });
-
+//insert and update.
 app.post("/compose", function(req, res){
-  var post = new Post({
-    title: req.body.postTitle,
-    content: req.body.postBody
-  });
-  
-  post.save(function(err){
-    if (!err){
+  const _id = req.body._id;
+  console.log(_id);
+  if(_id == ""){
+      var post = new Post({
+        title: req.body.postTitle,
+        content: req.body.postBody,
+      });
+
+      post.save(function (err) {
+        if (!err) {
+          res.redirect("/");
+        }
+      });
+  } else {
+app.post("/compose", function (req, res) {
+  Post.findOneAndUpdate(
+    { _id: req.body.postID },
+    req.body,
+    { new: true },
+    (err, doc) => {
+      if (!err) {
         res.redirect("/");
+      }
     }
-  });
+  );
+});
+}
 });
 
+//for every single post.
 app.get("/posts/:postId", function(req, res){
 const requestedPostId = req.params.postId;
   Post.findOne({_id: requestedPostId}, function(err, post){
@@ -66,6 +87,7 @@ const requestedPostId = req.params.postId;
   });
 });
 
+//delete the post
 app.post("/delete", function(req, res){
   const checkedPostID = req.body.checkbox;
   Post.findByIdAndRemove(checkedPostID, function (err) {
@@ -75,9 +97,10 @@ app.post("/delete", function(req, res){
   });
 });
 
+//finf the post using id.
 app.get("/compose/:postID", function (req, res) {
   const composedID = req.params.postID;
-  
+  //console.log(composedID);
   Post.findById(composedID, function (err, doc) {
     if (!err) {
       res.render("compose", {
@@ -86,10 +109,11 @@ app.get("/compose/:postID", function (req, res) {
         content: doc.content
       });
     } 
-   
+    //console.log(doc._id);
   });
 });
 
-app.listen(5000, function() {
-  console.log("Server started on port 5000");
+//connection
+app.listen(3000, function() {
+  console.log("Server started on port 3000");
 });
