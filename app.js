@@ -8,13 +8,10 @@ const homeStartingContent =
 
 const app = express();
 
-//views: the directory where the template files are located
-//view engine, the template engine to use.  to use the ejs template engine.
-
-app.set('view engine', 'ejs'); //set the view engine to ejs.
+app.set('view engine', 'ejs'); 
 
 app.use(express.urlencoded({extended: true}));
-app.use(express.static("public")); //To serve static files such as images, CSS files, and JavaScript files, use the express.static built-in middleware function in Express.
+app.use(express.static("public"));
 
 mongoose.connect("mongodb://localhost:27017/blogDB", {useNewUrlParser: true});
 
@@ -28,8 +25,6 @@ const postSchema = {
 };
 
 const Post = mongoose.model("Post", postSchema);
-//The first argument is the singular name of the collection your model is for. Mongoose automatically looks for the plural, lowercased version of your model name. 
-
 app.get("/", function(req, res){
 
   Post.find({}, function(err, posts){
@@ -82,7 +77,7 @@ app.post("/delete", function(req, res){
 
 app.get("/compose/:postID", function (req, res) {
   const composedID = req.params.postID;
-  //console.log(composedID);
+  
   Post.findById(composedID, function (err, doc) {
     if (!err) {
       res.render("compose", {
@@ -91,23 +86,9 @@ app.get("/compose/:postID", function (req, res) {
         content: doc.content
       });
     } 
-    //console.log(doc._id);
+   
   });
 });
-
-// app.post("/compose", function(req, res){
-//       Post.findOneAndUpdate(
-//         { _id: req.body.postID },
-//         req.body,
-//         { new: true },
-//         (err, doc) => {
-//           if (!err) {
-//             res.redirect("/");
-//           }
-//         }
-//       );
-// });
-
 
 app.listen(5000, function() {
   console.log("Server started on port 5000");
