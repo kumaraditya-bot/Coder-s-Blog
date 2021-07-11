@@ -1,5 +1,5 @@
 const express = require("express");
-const bodyParser = require("body-parser");
+const bodyParser = require("body-parser"); //body-parser is used for the conversion of postdata into request body.
 const ejs = require("ejs");
 const mongoose = require('mongoose');
 
@@ -45,6 +45,8 @@ app.get("/compose", function(req, res){
     content: req.body.postBody
   });
   });
+
+
 //insert and update.
 app.post("/compose", function(req, res){
   const _id = req.body._id;
@@ -60,10 +62,11 @@ app.post("/compose", function(req, res){
           res.redirect("/");
         }
       });
-  } else {
+  } 
+  else {
 app.post("/compose", function (req, res) {
   Post.findOneAndUpdate(
-    { _id: req.body.postID },
+    { _id: req.body._id },
     req.body,
     { new: true },
     (err, doc) => {
